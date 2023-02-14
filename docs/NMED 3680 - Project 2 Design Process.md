@@ -47,6 +47,7 @@ The project is about building a glove device where each of your five fingers wil
 - Aux Speaker Pin
 - 5 Flex Sensors
 - Electrical Terminals
+- Velcro (Fasteners)
 
 
 ## Tasks Done So Far
@@ -58,6 +59,8 @@ The project is about building a glove device where each of your five fingers wil
 		- KT Tape
 - Xavier Brooks
 - Sophia Mai
+	- Design Iterations 
+	- Bought 2 Pairs of Gloves ($5)
 
 ## TODO
 - Build The glove
