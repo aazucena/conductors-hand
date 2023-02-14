@@ -1,13 +1,15 @@
+# Conductor's Hand
+
 ## Description
 The project is about building a glove device where each of your five fingers will play different notes and light up each of the LEDs while moving your wrist changes the octave of the sound. This device involves the movement of your lower arm which includes your wrist, hand, and fingers to generate the sound.
 
 ## Design Process
 ### Iterations
 #### 1
-#### 2
-#### 3
-#### 4
-#### 5
+![Iteration_1](iterations/iteration1.png)
+#### 2 & 3
+![Iteration_2_and_3](iterations/iteration2-3.png)
+
 
 
 ### Pseudocode
@@ -58,11 +60,19 @@ The project is about building a glove device where each of your five fingers wil
 		- Aluminum Foil
 		- KT Tape
 - Xavier Brooks
+  - Powerpoint presentation
 - Sophia Mai
 	- Design Iterations 
-	- Bought 2 Pairs of Gloves ($5)
+	- Bought 3 Pairs of Gloves ($5)
 
 ## TODO
 - Build The glove
+  - Flex Sensors
+  - LEDs
+  - 3.5 Audio Jack
 - Develop the code
-- 3D Print the Gauntlet Casing for the Arduino
+  - Sound Synth
+  - LED system
+- 3D Print the Gauntlet Casing for the Arduino and Adjust based on the project
+  - [Arduino Holder](https://www.thingiverse.com/thing:1252601)
+  - [Forearm Split 1](https://www.thingiverse.com/thing:3613626/files)
