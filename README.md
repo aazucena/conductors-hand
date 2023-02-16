@@ -8,8 +8,10 @@ This Arduino project is about building a glove device where each of your five fi
 - [PlatformIO](https://docs.platformio.org/en/latest/integration/ide/vscode.html#ide-vscode)
 - Arduino UNO
 
-
 ## Instructions
+### How to use it?
+TBA
+### How to run the program
 TBA
 
 ## Components Used
@@ -29,8 +31,6 @@ TBA
 ## Resources
 
 - [*PlatformIO: Convert .ino -> .cpp file*](https://docs.platformio.org/en/latest/faq/ino-to-cpp.html)
-
-
 
 ## References
 
