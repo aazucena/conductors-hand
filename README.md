@@ -6,6 +6,7 @@ This Arduino project is about building a glove device where each of your five fi
 ## Requirements
 - [VSCode](https://code.visualstudio.com/)
 - [PlatformIO](https://docs.platformio.org/en/latest/integration/ide/vscode.html#ide-vscode)
+- Arduino UNO
 
 
 ## Instructions
