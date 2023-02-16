@@ -1,0 +1,60 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/include",
+                "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/src",
+                "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/.pio/libdeps/uno/Mozzi",
+                "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/.pio/libdeps/uno/Mozzi/utility",
+                "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/variants/standard",
+                "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/include",
+                    "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/src",
+                    "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/.pio/libdeps/uno/Mozzi",
+                    "c:/Users/Amelia/Documents/University/9 - Spring 2023/NMED 3680/Project/2/conductors-hand/.pio/libdeps/uno/Mozzi/utility",
+                    "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/variants/standard",
+                    "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "C:/Users/Amelia/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60106",
+                "ARDUINO_AVR_UNO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega328P__",
+                ""
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "C:/Users/Amelia/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}

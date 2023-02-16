@@ -12,6 +12,7 @@
  * 
  */
 
+#include <Arduino.h>              // Arduino Library
 #include <math.h>                // C+ Math Library 
 #include <MozziGuts.h>           // Main mozzi object
 
