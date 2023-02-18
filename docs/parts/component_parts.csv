@@ -1,0 +1,11 @@
+﻿Name,Quantity,Component
+"U1",1," Arduino Uno R3"
+"RMiddle Flex, RIndex Flex, RRing Flex, RPinky Flex, RThumb Flex, RWrist Flex",6," Flex Sensor"
+"RThumb Flex Ohms, RIndex Flex Ohms, RMiddle Flex Ohms, RRing Flex Ohms, RPinky Flex Ohms, RWrist Flex Ohms",6,"10 kΩ Resistor"
+"DThumb LED",1,"Green LED"
+"DIndex LED",1,"Yellow LED"
+"DRing LED",1,"Blue LED"
+"DMiddle LED",1,"Orange LED"
+"DPinky LED",1,"Red LED"
+"RThumb LED Ohms, RMiddle LED Ohms, RRing LED Ohms, RIndex LED Ohms, RPinky LED Ohms",5,"220 Ω Resistor"
+"PIEZOAudio Jack Input",1," Piezo"
