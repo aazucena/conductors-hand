@@ -9,6 +9,7 @@
  * @ref https://www.instructables.com/Arduino-Flex-Sensor-Glove/
  * @ref https://github.com/JonathanCates/Flex_Sensor_Glove/blob/master/Flex_Sensor_Glove.ino
  * @ref https://lastminuteengineers.com/flex-sensor-arduino-tutorial/#:~:text=The%20resistance%20of%20the%20flex,Rflex)%20%2B%20%22%20ohms%22)%3B
+ * @ref https://circuitdigest.com/microcontroller-projects/interfacing-flex-sensor-with-arduino
  * @version 0.1
  * @date 2023-02-13
  * 
