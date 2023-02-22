@@ -30,9 +30,9 @@
 #include <mozzi_rand.h>
 #include <mozzi_midi.h>
 
-#define CONTROL_RATE 128
 
 const int total_fingers = 5;
+#define CONTROL_RATE 1280
 
 
 enum Finger {
@@ -89,6 +89,7 @@ const float bend_resistance = 67500.00; // resistance at 90 deg
 /// pitch mod from wrist
 int wrist_mod = 1;
 
+boolean is_note_on[total_fingers];
 
 /**
  * @brief SEts the ADSR envelope whenever it plays the note
@@ -98,14 +99,14 @@ int wrist_mod = 1;
  */
 void setADSREnvelope(Finger finger) {
 
-  byte attack_level = rand(128)+127;
-  byte decay_level = rand(255);
+  byte attack_level = 255;
+  byte decay_level = 255;
   envelopes[finger].setADLevels(attack_level,decay_level);
   envelopes[finger].setReleaseLevel(0);
-  attack = 50;
-  decay = 200;
-  release_ms = 200;
-  sustain = 200;
+  attack = 0;
+  decay = 50;
+  sustain = 60000;
+  release_ms = 40;
   envelopes[finger].setTimes(attack, decay, sustain, release_ms);
 }
 
@@ -191,8 +192,8 @@ void detectFingerFlex(Finger finger) {
   if (abs(angle) > 45.0)
   {
     envelopes[finger].noteOn();
-    int smoothed_freq = kSmoothFreq.next(freq);
-    (aOscils[finger]).setFreq(smoothed_freq);
+    is_note_on[finger] = true;
+    (aOscils[finger]).setFreq(freq);
     envelopes[finger].update();
     analogWrite(led_pin, 255);
   }
@@ -200,6 +201,8 @@ void detectFingerFlex(Finger finger) {
   {
     envelopes[finger].noteOff();
     envelopes[finger].update();
+    (aOscils[finger]).setFreq(0);
+    is_note_on[finger] = false;
     analogWrite(led_pin, 0);
   }
 }
@@ -235,7 +238,7 @@ void setup() {
 
   pinMode(wrist_flex_pin, INPUT);
   // Serial.begin(9600); // for Teensy 3.1, beware printout can cause glitches
-  Serial.begin(115200);
+  // Serial.begin(115200);
   randSeed(); // fresh random
   
   setADSREnvelope(THUMB);
@@ -244,7 +247,7 @@ void setup() {
   setADSREnvelope(RING);
   setADSREnvelope(PINKY);
   noteDelay.set(2000); // 2 second countdown
-  startMozzi(CONTROL_RATE); // initializes the Mozzi Library for synth generation
+  startMozzi(); // initializes the Mozzi Library for synth generation
 }
 
 /**
@@ -258,13 +261,15 @@ void updateControl() {
     detectFingerFlex(THUMB);
     // delay(500);
     detectFingerFlex(INDEX);
-    // delay(500);
+    // // delay(500);
     detectFingerFlex(MIDDLE);
     detectFingerFlex(RING);
     detectFingerFlex(PINKY);
   }
   for (int i = 0; i < total_fingers; i++) {
-    envelopes[i].update();
+    if (is_note_on[i] == true) {
+      envelopes[i].update();
+    }
   }
 }
 
@@ -275,14 +280,12 @@ void updateControl() {
  */
 int updateAudio() {
   long result = 0;
-  for (int i = 0; i < total_fingers; i++) {
-    if (i == 0) {
-      result += (int)(envelopes[i].next() * aOscils[i].next());
-    } else {
-      result += (int)(envelopes[i].next() * aOscils[i].next());
+  for (int i = 0; i < 2; i++) {
+    if (is_note_on[i] == true) {
+      result += ((int)aOscils[i].next() * envelopes[i].next());
     }
   }
-  return (result) >> 8; // insert frequency here
+  return ((result) >> 8) >> 2 ; // insert frequency here
 }
 
 void loop() {
