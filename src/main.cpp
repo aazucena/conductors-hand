@@ -60,7 +60,7 @@ EventDelay noteDelays[total_fingers];
 ADSR <CONTROL_RATE, AUDIO_RATE> envelopes[total_fingers];
 
 /// Default ADSR constant values 
-const unsigned int ATTACK = 25;
+const unsigned int ATTACK = 12;
 const unsigned int DECAY = 50;
 const unsigned int SUSTAIN = 60000;
 const unsigned int RELEASE_MS = 40;
