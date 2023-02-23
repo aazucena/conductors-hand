@@ -26,13 +26,13 @@
 #include <EventDelay.h>
 #include <ADSR.h>
 #include <tables/sin2048_int8.h> 
-#include <Smooth.h>
 #include <mozzi_rand.h>
 #include <mozzi_midi.h>
+#define AUDIO_MODE STANDARD_PLUS
 
 
 const int total_fingers = 5;
-#define CONTROL_RATE 1280
+#define CONTROL_RATE 64
 
 
 enum Finger {
@@ -45,19 +45,73 @@ enum Finger {
 
 /// Oscillators based on fingers
 Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> aOscils[total_fingers] = {
-  Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> (SIN2048_DATA),
-  Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> (SIN2048_DATA),
-  Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> (SIN2048_DATA),
-  Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> (SIN2048_DATA),
-  Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> (SIN2048_DATA),
+  (SIN2048_DATA),
+  (SIN2048_DATA),
+  (SIN2048_DATA),
+  (SIN2048_DATA),
+  (SIN2048_DATA),
 };
 
-Smooth <int> kSmoothFreq(0.975f);
 /// for triggering the envelope
 EventDelay noteDelay;
+EventDelay noteDelays[total_fingers];
 
+/// ADSR Envelope for note dynmaics
 ADSR <CONTROL_RATE, AUDIO_RATE> envelopes[total_fingers];
-unsigned int duration, attack, decay, sustain, release_ms;
+
+/// Default ADSR constant values 
+const unsigned int ATTACK = 25;
+const unsigned int DECAY = 50;
+const unsigned int SUSTAIN = 60000;
+const unsigned int RELEASE_MS = 40;
+const byte ATTACK_LEVEL = 255;
+const byte DECAY_LEVEL = 255;
+
+/// ADSR values for the fingers
+unsigned int attack[total_fingers] = { 
+  ATTACK,
+  ATTACK,
+  ATTACK,
+  ATTACK,
+  ATTACK,
+};
+unsigned int decay[total_fingers] = { 
+  DECAY,
+  DECAY,
+  DECAY,
+  DECAY,
+  DECAY,
+};
+unsigned int sustain[total_fingers] = { 
+  SUSTAIN,
+  SUSTAIN,
+  SUSTAIN,
+  SUSTAIN,
+  SUSTAIN,
+};
+unsigned int release_ms[total_fingers] = { 
+  RELEASE_MS,
+  RELEASE_MS,
+  RELEASE_MS,
+  RELEASE_MS,
+  RELEASE_MS,
+};
+
+byte attack_level[total_fingers] = { 
+  ATTACK_LEVEL,
+  ATTACK_LEVEL,
+  ATTACK_LEVEL,
+  ATTACK_LEVEL,
+  ATTACK_LEVEL,
+};
+byte decay_level[total_fingers] = { 
+  DECAY_LEVEL,
+  DECAY_LEVEL,
+  DECAY_LEVEL,
+  DECAY_LEVEL,
+  DECAY_LEVEL,
+};
+
 
 
 /// Flex Pins based on Fingers
@@ -92,22 +146,41 @@ int wrist_mod = 1;
 boolean is_note_on[total_fingers];
 
 /**
- * @brief SEts the ADSR envelope whenever it plays the note
+ * @brief Sets the ADSR envelope whenever it plays the note
  * 
- * @param attack_lvl 
- * @param decay_lvl 
+ * @param finger 
  */
 void setADSREnvelope(Finger finger) {
-
-  byte attack_level = 255;
-  byte decay_level = 255;
-  envelopes[finger].setADLevels(attack_level,decay_level);
+  envelopes[finger].setADLevels(attack_level[finger],decay_level[finger]);
   envelopes[finger].setReleaseLevel(0);
-  attack = 0;
-  decay = 50;
-  sustain = 60000;
-  release_ms = 40;
-  envelopes[finger].setTimes(attack, decay, sustain, release_ms);
+  envelopes[finger].setTimes(attack[finger], decay[finger], sustain[finger], release_ms[finger]);
+}
+/**
+ * @brief Set the ADSR envelope with the new  values
+ * 
+ * @param finger 
+ * @param atk 
+ * @param dec 
+ * @param sus 
+ * @param rel 
+ * @param atk_lvl 
+ * @param dec_lvl 
+ */
+void changeADSREnvelope(
+  Finger finger, 
+  unsigned int atk,
+  unsigned int dec,
+  unsigned int sus,
+  unsigned int rel,
+  byte atk_lvl,
+  byte dec_lvl
+) {
+  attack[finger] = atk;
+  decay[finger] = dec;
+  sustain[finger] = sus;
+  release_ms[finger] = rel;
+  attack_level[finger] = atk_lvl;
+  decay_level[finger] = dec_lvl;
 }
 
 
@@ -143,25 +216,53 @@ String getFingerName(Finger finger) {
  * Ring = E5
  * Pinky = G5 
  * @ref https://pages.mtu.edu/~suits/notefreqs.html
+ * @ref https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies
  * @param finger 
  * @return float 
  */
 float getNote(Finger finger) {
   switch(finger) {
     case THUMB:
-      return 349.f * wrist_mod;
+      return mtof(65) * wrist_mod;
+      // return 349.f * wrist_mod;
     case INDEX:
-      return 440.f * wrist_mod;
+      return mtof(69) * wrist_mod;
+      // return 440.f * wrist_mod;
     case MIDDLE:
-      return 523.f * wrist_mod;
+      return mtof(72) * wrist_mod;
+      // return 523.f * wrist_mod;
     case RING:
-      return 659.f * wrist_mod;
+      return mtof(76) * wrist_mod;
+      // return 659.f * wrist_mod;
     case PINKY:
-      return 784.f * wrist_mod;
+      return mtof(79) * wrist_mod;
+      // return 784.f * wrist_mod;
     default:
       return 0;
   }
 }
+
+/**
+ * @brief Change the ADSR values based on the finger and the angle of the flex sensor
+ * 
+ * @param finger 
+ * @param angle 
+ */
+void setGain(Finger finger, float angle) {
+  if (angle >= 45.0 && angle < 56.25) {
+
+    changeADSREnvelope(finger, ATTACK*0.25, DECAY*0.25, SUSTAIN*0.25, RELEASE_MS*0.25, ATTACK_LEVEL, DECAY_LEVEL);
+  } else if (angle >= 56.25 && angle < 67.5) {
+
+    changeADSREnvelope(finger, ATTACK*0.5, DECAY*0.5, SUSTAIN*0.5, RELEASE_MS*0.5, ATTACK_LEVEL, DECAY_LEVEL);
+  } else if (angle >= 67.5) {
+    
+    changeADSREnvelope(finger, ATTACK, DECAY, SUSTAIN, RELEASE_MS, ATTACK_LEVEL, DECAY_LEVEL);
+  } else {
+    changeADSREnvelope(finger, 0, 0, 0, 0, 0, 0);
+  }
+}
+
 
 /**
  * @brief Detects the finger from the designated flex sensor
@@ -169,7 +270,6 @@ float getNote(Finger finger) {
  * @param finger 
  */
 void detectFingerFlex(Finger finger) {
-  setADSREnvelope(finger);
   int flex_pin = flex_pins[finger];
   int led_pin = led_pins[finger];
   float freq = getNote(finger);
@@ -180,17 +280,11 @@ void detectFingerFlex(Finger finger) {
   float voltage = adc * vcc / 1023.0;
   float resistance = resist_divider * (vcc / voltage - 1.0);
 
-  Serial.println("**" + finger_name + " Finger**");
-  Serial.println("Resistance: " + String(resistance) + " ohms");
-
   // Use the calculated resistance to estimate the sensor's bend angle:
   float angle = map(resistance, flat_resistance, bend_resistance, 0, 90.0);
-
-  Serial.println("Bend: " + String(abs(angle)) + " degrees");
-  Serial.println();
-
-  if (abs(angle) > 45.0)
+  if (angle >= 45.0)
   {
+    setGain(finger, angle);
     envelopes[finger].noteOn();
     is_note_on[finger] = true;
     (aOscils[finger]).setFreq(freq);
@@ -199,12 +293,15 @@ void detectFingerFlex(Finger finger) {
   }
   else
   {
+    changeADSREnvelope(finger, ATTACK, DECAY, SUSTAIN, RELEASE_MS, ATTACK_LEVEL, DECAY_LEVEL);
     envelopes[finger].noteOff();
     envelopes[finger].update();
     (aOscils[finger]).setFreq(0);
     is_note_on[finger] = false;
     analogWrite(led_pin, 0);
   }
+  setADSREnvelope(finger);
+  noteDelays[finger].start(attack[finger]+decay[finger]+sustain[finger]+release_ms[finger]);
 }
 
 /**
@@ -215,18 +312,12 @@ void detectFingerFlex(Finger finger) {
 void detectWristFlex(int flex_pin) {
   
   // Read the ADC (Analog to DC), and calculate voltage and resistance from it
-  int adc = mozziAnalogRead(flex_pin);
+  int adc = analogRead(flex_pin);
   float voltage = adc * vcc / 1023.0;
   float resistance = resist_divider * (vcc / voltage - 1.0);
 
-  Serial.println("**Wrist**");
-  Serial.println("Resistance: " + String(resistance) + " ohms");
-
   // Use the calculated resistance to estimate the sensor's bend angle:
   float angle = map(resistance, flat_resistance, bend_resistance, 0, 90.0);
-
-  Serial.println("Bend: " + String(angle) + " degrees");
-  Serial.println();
 }
 
 
@@ -238,7 +329,7 @@ void setup() {
 
   pinMode(wrist_flex_pin, INPUT);
   // Serial.begin(9600); // for Teensy 3.1, beware printout can cause glitches
-  // Serial.begin(115200);
+  Serial.begin(115200);
   randSeed(); // fresh random
   
   setADSREnvelope(THUMB);
@@ -246,8 +337,11 @@ void setup() {
   setADSREnvelope(MIDDLE);
   setADSREnvelope(RING);
   setADSREnvelope(PINKY);
-  noteDelay.set(2000); // 2 second countdown
-  startMozzi(); // initializes the Mozzi Library for synth generation
+  for(int i = 0; i < total_fingers; i++) {
+    noteDelays[i].set(2000); // 2 second countdown
+  }
+  // noteDelay.set(2000); // 2 second countdown
+  startMozzi(CONTROL_RATE); // initializes the Mozzi Library for synth generation
 }
 
 /**
@@ -265,6 +359,7 @@ void updateControl() {
     detectFingerFlex(MIDDLE);
     detectFingerFlex(RING);
     detectFingerFlex(PINKY);
+    detectWristFlex(wrist_flex_pin);
   }
   for (int i = 0; i < total_fingers; i++) {
     if (is_note_on[i] == true) {
@@ -283,9 +378,11 @@ int updateAudio() {
   for (int i = 0; i < 2; i++) {
     if (is_note_on[i] == true) {
       result += ((int)aOscils[i].next() * envelopes[i].next());
+    } else {
+      result += 0;
     }
   }
-  return ((result) >> 8) >> 2 ; // insert frequency here
+  return (result) >> 10; // insert frequency here
 }
 
 void loop() {
