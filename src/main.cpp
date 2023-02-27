@@ -318,6 +318,11 @@ void detectWristFlex(int flex_pin) {
 
   // Use the calculated resistance to estimate the sensor's bend angle:
   float angle = map(resistance, flat_resistance, bend_resistance, 0, 90.0);
+  // if (angle >= 45.0) {
+  //   wrist_mod = 0.5;
+  // } else {
+  //   wrist_mod = 1;
+  // }
 }
 
 
@@ -375,7 +380,7 @@ void updateControl() {
  */
 int updateAudio() {
   long result = 0;
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 4; i++) {
     if (is_note_on[i] == true) {
       result += ((int)aOscils[i].next() * envelopes[i].next());
     } else {
