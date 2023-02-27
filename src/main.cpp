@@ -28,10 +28,12 @@
 #include <tables/sin2048_int8.h> 
 #include <mozzi_rand.h>
 #include <mozzi_midi.h>
-#define AUDIO_MODE STANDARD_PLUS
+#define AUDIO_MODE STANDARD_PLUS // Set Audio mode to Standard Plus
 
-
+/// Total number of fingers
 const int total_fingers = 5;
+
+/// Control Rate of the Audio Output
 #define CONTROL_RATE 64
 
 
@@ -143,6 +145,7 @@ const float bend_resistance = 67500.00; // resistance at 90 deg
 /// pitch mod from wrist
 int wrist_mod = 1;
 
+/// Boolean Array to check if  the note is triggered
 boolean is_note_on[total_fingers];
 
 /**
@@ -151,8 +154,13 @@ boolean is_note_on[total_fingers];
  * @param finger 
  */
 void setADSREnvelope(Finger finger) {
+  /// Set levels for the attack and decay
   envelopes[finger].setADLevels(attack_level[finger],decay_level[finger]);
+  
+  /// Set level for release
   envelopes[finger].setReleaseLevel(0);
+
+  /// Set the envelope times for ADSR
   envelopes[finger].setTimes(attack[finger], decay[finger], sustain[finger], release_ms[finger]);
 }
 /**
@@ -334,14 +342,17 @@ void setup() {
 
   pinMode(wrist_flex_pin, INPUT);
   // Serial.begin(9600); // for Teensy 3.1, beware printout can cause glitches
-  Serial.begin(115200);
+  /// Set Serial Code on 11520 to prevent any interruptions from different serial ports 
+  Serial.begin(115200); 
   randSeed(); // fresh random
-  
+  /// Set ADSR Envelopes for the fingers
   setADSREnvelope(THUMB);
   setADSREnvelope(INDEX);
   setADSREnvelope(MIDDLE);
   setADSREnvelope(RING);
   setADSREnvelope(PINKY);
+
+  /// Set note delays for each fingers by 2000ms
   for(int i = 0; i < total_fingers; i++) {
     noteDelays[i].set(2000); // 2 second countdown
   }
@@ -354,18 +365,18 @@ void setup() {
  *
  */
 void updateControl() {
-  /// insert code that updates the frequency
 
-  if(noteDelay.ready()) {
-    detectFingerFlex(THUMB);
-    // delay(500);
-    detectFingerFlex(INDEX);
-    // // delay(500);
-    detectFingerFlex(MIDDLE);
-    detectFingerFlex(RING);
-    detectFingerFlex(PINKY);
-    detectWristFlex(wrist_flex_pin);
-  }
+  /// Get Pitch by each finger detection
+  detectWristFlex(wrist_flex_pin);
+
+  /// Get Note by the each finger detection
+  detectFingerFlex(THUMB);
+  detectFingerFlex(INDEX);
+  detectFingerFlex(MIDDLE);
+  detectFingerFlex(RING);
+  detectFingerFlex(PINKY);
+  
+  /// Check if the note is on for each finger
   for (int i = 0; i < total_fingers; i++) {
     if (is_note_on[i] == true) {
       envelopes[i].update();
@@ -379,7 +390,12 @@ void updateControl() {
  * @return int
  */
 int updateAudio() {
+  
+  /// Play the audio based from each notes from the finger
   long result = 0;
+
+  const int byte_shift = 10;
+  
   for (int i = 0; i < 4; i++) {
     if (is_note_on[i] == true) {
       result += ((int)aOscils[i].next() * envelopes[i].next());
@@ -387,7 +403,7 @@ int updateAudio() {
       result += 0;
     }
   }
-  return (result) >> 10; // insert frequency here
+  return (result) >> byte_shift; // insert frequency here
 }
 
 void loop() {
