@@ -406,6 +406,10 @@ int updateAudio() {
   return (result) >> byte_shift; // insert frequency here
 }
 
+/**
+ * @brief Run audio hook to the loop function
+ * 
+ */
 void loop() {
   audioHook(); // Run the audio hook to run the synth
 }
