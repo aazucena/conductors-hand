@@ -290,7 +290,7 @@ void detectFingerFlex(Finger finger) {
 
   // Use the calculated resistance to estimate the sensor's bend angle:
   float angle = map(resistance, flat_resistance, bend_resistance, 0, 90.0);
-  if (angle >= 45.0)
+  if (angle >= 67.5)
   {
     setGain(finger, angle);
     envelopes[finger].noteOn();
@@ -366,9 +366,6 @@ void setup() {
  */
 void updateControl() {
 
-  /// Get Pitch by each finger detection
-  detectWristFlex(wrist_flex_pin);
-
   /// Get Note by the each finger detection
   detectFingerFlex(THUMB);
   detectFingerFlex(INDEX);
@@ -396,7 +393,7 @@ int updateAudio() {
 
   const int byte_shift = 10;
   
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 5; i++) {
     if (is_note_on[i] == true) {
       result += ((int)aOscils[i].next() * envelopes[i].next());
     } else {
