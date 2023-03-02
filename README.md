@@ -22,7 +22,7 @@ This Arduino project is about building a glove device where each of your five fi
 - Copper Wires
 - Graphite Colored Paper (5x)
 - 3D Printed Wrist Gauntlet
-- LEDs (4x)
+- LEDs (5x)
 - Aux Speaker Pin
 - 5 Flex Sensors
 - Electrical Terminals
