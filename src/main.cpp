@@ -36,7 +36,7 @@ const int total_fingers = 5;
 /// Control Rate of the Audio Output
 #define CONTROL_RATE 64
 
-
+/// @brief  
 enum Finger {
   THUMB = 0,
   INDEX = 1,
@@ -98,7 +98,6 @@ unsigned int release_ms[total_fingers] = {
   RELEASE_MS,
   RELEASE_MS,
 };
-
 byte attack_level[total_fingers] = { 
   ATTACK_LEVEL,
   ATTACK_LEVEL,
@@ -278,63 +277,63 @@ void setGain(Finger finger, float angle) {
  * @param finger 
  */
 void detectFingerFlex(Finger finger) {
-  int flex_pin = flex_pins[finger];
-  int led_pin = led_pins[finger];
-  float freq = getNote(finger);
-  String finger_name = getFingerName(finger);
+  int flex_pin = flex_pins[finger]; // Designated finger's flex sensor pin
+  int led_pin = led_pins[finger]; // Designated finger's LED pin
+  float freq = getNote(finger); // Designated finger's frequency value
+  String finger_name = getFingerName(finger); // Designated finger's string name value
 
-  // Read the ADC (Analog to DC), and calculate voltage and resistance from it
+  /// Read the ADC (Analog to DC), and calculate voltage and resistance from it
   int adc = mozziAnalogRead(flex_pin);
   float voltage = adc * vcc / 1023.0;
   float resistance = resist_divider * (vcc / voltage - 1.0);
 
-  // Use the calculated resistance to estimate the sensor's bend angle:
+  /// Use the calculated resistance to estimate the sensor's bend angle:
   float angle = map(resistance, flat_resistance, bend_resistance, 0, 90.0);
   if (angle >= 67.5)
   {
+    /// Set the appropriate gain for the ADSR
     setGain(finger, angle);
+    /// Set the note trigger to on
     envelopes[finger].noteOn();
     is_note_on[finger] = true;
+
+    /// Input the designated frequency based on the designated finger
     (aOscils[finger]).setFreq(freq);
+
+    /// update the ADSR envelope based on the designated finger
     envelopes[finger].update();
+
+    /// light the designated LED
     analogWrite(led_pin, 255);
   }
   else
   {
+    /// Set back to default gain values for the ADSR
     changeADSREnvelope(finger, ATTACK, DECAY, SUSTAIN, RELEASE_MS, ATTACK_LEVEL, DECAY_LEVEL);
+
+    /// Set the note trigger to on
     envelopes[finger].noteOff();
-    envelopes[finger].update();
-    (aOscils[finger]).setFreq(0);
     is_note_on[finger] = false;
+
+    /// Set the frequency value to 0
+    (aOscils[finger]).setFreq(0);
+
+    /// update the ADSR envelope based on the designated finger
+    envelopes[finger].update();
+
+    /// dim the designated LED
     analogWrite(led_pin, 0);
   }
+
+  /// Set the new ADSR values for the designated finger
   setADSREnvelope(finger);
+  /// Set the new note delay values for the designated finger
   noteDelays[finger].start(attack[finger]+decay[finger]+sustain[finger]+release_ms[finger]);
-}
-
-/**
- * @brief Detects the wrist from the designated flex sensor
- * 
- * @param flex_pin 
- */
-void detectWristFlex(int flex_pin) {
-  
-  // Read the ADC (Analog to DC), and calculate voltage and resistance from it
-  int adc = analogRead(flex_pin);
-  float voltage = adc * vcc / 1023.0;
-  float resistance = resist_divider * (vcc / voltage - 1.0);
-
-  // Use the calculated resistance to estimate the sensor's bend angle:
-  float angle = map(resistance, flat_resistance, bend_resistance, 0, 90.0);
-  // if (angle >= 45.0) {
-  //   wrist_mod = 0.5;
-  // } else {
-  //   wrist_mod = 1;
-  // }
 }
 
 
 void setup() {
+  /// Initialize digital and analog pins for flex sensors and LEDs
   for(int i = 0; i < total_fingers; i++) {
     pinMode(led_pins[i], OUTPUT);
     pinMode(flex_pins[i], INPUT);
@@ -391,9 +390,11 @@ int updateAudio() {
   /// Play the audio based from each notes from the finger
   long result = 0;
 
+  ///byte value that plays the sound based on the shifted byte
   const int byte_shift = 10;
   
-  for (int i = 0; i < 5; i++) {
+  /// Get the audio frequencies from the triggered fingers
+  for (int i = 0; i < total_fingers; i++) {
     if (is_note_on[i] == true) {
       result += ((int)aOscils[i].next() * envelopes[i].next());
     } else {
