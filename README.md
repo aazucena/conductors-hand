@@ -28,9 +28,9 @@ This Arduino project is about building a glove device where each of your five fi
 - Electrical Terminals
 - Velcro (Fasteners)
 ## Circuit Schema
-![conductors-hand](./docs/diagrams/Conductor's%20Hand.png)
+![conductors-hand](./docs/diagrams/conductors_hand.png)
 
-[Wiring Schema PDF](./docs/schema/Conductor's%20Hand.pdf)
+[Wiring Schema PDF](./docs/schema/conductors_hand.pdf)
 
 ## Images 
 
@@ -44,7 +44,7 @@ This Arduino project is about building a glove device where each of your five fi
 ![](./docs/images/DSC_0102.JPG)
 
 ## Video
-[Demo Video {/docs/video/Conductor's Hand-demo.mp4}](./docs/video/Conductor's%20Hand-demo.mp4)
+[Demo Video {/docs/video/conductors_hand-demo.mp4}](./docs/video/conductors_hand-demo.mp4)
 
 ## Contributions
 - Aldrin Azucena
