@@ -44,7 +44,7 @@ This Arduino project is about building a glove device where each of your five fi
 ![](./docs/images/DSC_0102.JPG)
 
 ## Video
-TBA
+[Demo Video {/docs/video/Conductor's Hand-demo.mp4}](./docs/video/Conductor's%20Hand-demo.mp4)
 
 ## Contributions
 - Aldrin Azucena
